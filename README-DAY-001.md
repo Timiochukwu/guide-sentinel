@@ -831,105 +831,10 @@ temp/
 Python dependencies with specific versions for reproducibility.
 
 ```txt
-# ============================================================================
-# Sentinel Fraud Detection Platform - Python Dependencies
-# ============================================================================
-#
-# INSTALLATION:
-#   pip install -r requirements.txt
-#
-# UPDATING:
-#   pip install --upgrade -r requirements.txt
-#
-# FREEZING CURRENT VERSIONS:
-#   pip freeze > requirements.txt
-#
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-# Web Framework
-# ----------------------------------------------------------------------------
-
-# FastAPI - Modern, fast web framework for building APIs
-# Includes: Starlette, Pydantic, typing support
+# Day 1 - FastAPI Basics Only
 fastapi==0.104.1
-
-# Uvicorn - Lightning-fast ASGI server
-# Includes: uvloop (high-performance event loop), httptools
 uvicorn[standard]==0.24.0
-
-# ----------------------------------------------------------------------------
-# Data Validation & Serialization
-# ----------------------------------------------------------------------------
-
-# Pydantic - Data validation using Python type annotations
-# (Included with FastAPI, but explicit version for clarity)
-pydantic==2.5.0
-
-# Pydantic Settings - Settings management using environment variables
-pydantic-settings==2.1.0
-
-# ----------------------------------------------------------------------------
-# Async Support
-# ----------------------------------------------------------------------------
-
-# HTTPX - Async HTTP client (for making API calls)
-httpx==0.25.2
-
-# ----------------------------------------------------------------------------
-# Environment Management
-# ----------------------------------------------------------------------------
-
-# Python-dotenv - Load environment variables from .env file
 python-dotenv==1.0.0
-
-# ----------------------------------------------------------------------------
-# Development Tools (optional but recommended)
-# ----------------------------------------------------------------------------
-
-# pytest - Testing framework
-pytest==7.4.3
-
-# pytest-asyncio - Async test support for pytest
-pytest-asyncio==0.21.1
-
-# pytest-cov - Code coverage plugin for pytest
-pytest-cov==4.1.0
-
-# black - Code formatter
-black==23.12.0
-
-# flake8 - Linting tool
-flake8==6.1.0
-
-# mypy - Static type checker
-mypy==1.7.1
-
-# isort - Import statement organizer
-isort==5.13.2
-
-# ============================================================================
-# DEPENDENCY TREE
-# ============================================================================
-#
-# fastapi==0.104.1
-#   ├── starlette==0.27.0
-#   │   └── anyio==3.7.1
-#   ├── pydantic==2.5.0
-#   │   ├── pydantic-core==2.14.1
-#   │   └── typing-extensions==4.8.0
-#   └── typing-extensions==4.8.0
-#
-# uvicorn[standard]==0.24.0
-#   ├── click==8.1.7
-#   ├── h11==0.14.0
-#   ├── httptools==0.6.1  (from [standard])
-#   ├── python-dotenv==1.0.0  (from [standard])
-#   ├── pyyaml==6.0.1  (from [standard])
-#   ├── uvloop==0.19.0  (from [standard])
-#   └── watchfiles==0.21.0  (from [standard])
-#
-# ============================================================================
 ```
 
 ---
@@ -989,17 +894,7 @@ Create the requirements file:
 cat > requirements.txt << 'EOF'
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
-httpx==0.25.2
 python-dotenv==1.0.0
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
-black==23.12.0
-flake8==6.1.0
-mypy==1.7.1
-isort==5.13.2
 EOF
 ```
 
@@ -1407,65 +1302,7 @@ server: uvicorn
 http localhost:8000/api/v1/info
 ```
 
-### Using Python Requests
 
-Test programmatically with Python:
-
-```bash
-# Create a test script
-cat > test_api.py << 'EOF'
-import requests
-
-BASE_URL = "http://localhost:8000"
-
-def test_health():
-    response = requests.get(f"{BASE_URL}/health")
-    print(f"Status Code: {response.status_code}")
-    print(f"Response: {response.json()}")
-    assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
-    print("✓ Health check passed")
-
-def test_info():
-    response = requests.get(f"{BASE_URL}/api/v1/info")
-    print(f"Status Code: {response.status_code}")
-    print(f"Response: {response.json()}")
-    assert response.status_code == 200
-    assert response.json()["service"] == "Sentinel Fraud Detection API"
-    print("✓ Info endpoint passed")
-
-if __name__ == "__main__":
-    test_health()
-    print()
-    test_info()
-    print("\n✓ All tests passed!")
-EOF
-
-# Run the test
-python test_api.py
-```
-
-### Performance Testing
-
-Test how your API handles load:
-
-```bash
-# Install Apache Bench (comes with Apache)
-# Ubuntu: sudo apt-get install apache2-utils
-# macOS: already installed
-
-# Run 1000 requests with 10 concurrent connections
-ab -n 1000 -c 10 http://localhost:8000/health
-
-# Expected output shows:
-# - Requests per second
-# - Time per request
-# - Connection times (mean, median, max)
-
-# Example output:
-# Requests per second: 2500.00 [#/sec]
-# Time per request: 4.000 [ms] (mean)
-```
 
 ---
 
@@ -1823,8 +1660,7 @@ Before moving to Day 2, ensure:
 - [ ] No import errors or warnings
 - [ ] Virtual environment is properly set up
 - [ ] .env file is not committed to Git
-- [ ] Code is properly formatted (run `black app/`)
-- [ ] No linting errors (run `flake8 app/`)
+- [ ] Test all endpoints with curl or browser (Swagger UI at /docs)
 
 ---
 

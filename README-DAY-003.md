@@ -1237,344 +1237,139 @@ except ValidationError as e:
 
 ## Testing Your Schemas
 
-### Test Script 1: Valid Schema Creation
+The best way to test Pydantic schemas is through actual API endpoints. FastAPI automatically validates incoming requests using your schemas and generates interactive documentation.
 
-**File: `/home/user/sentinel-api/test_schemas_valid.py`**
+### Using Swagger UI (Interactive Testing)
 
-```python
-#!/usr/bin/env python3
-"""
-Test script for valid Pydantic schemas.
+1. **Start your FastAPI server:**
+   ```bash
+   uvicorn app.main:app --reload
+   ```
 
-Tests that all schemas can be created with valid data.
-"""
+2. **Open Swagger UI in your browser:**
+   ```
+   http://localhost:8000/docs
+   ```
 
-from datetime import datetime
-from app.models.schemas import (
-    Industry,
-    TransactionType,
-    FraudVerdict,
-    RiskLevel,
-    DeviceInfo,
-    UserInfo,
-    LocationInfo,
-    TransactionCheckRequest,
-    FraudFlag,
-    FraudCheckResponse,
-)
+3. **Test schema validation visually:**
+   - Click on any endpoint that uses your schemas
+   - Click "Try it out"
+   - Enter test data in the request body
+   - Click "Execute"
+   - View validation errors or successful responses
 
+**Benefits:**
+- ✅ No test code to write
+- ✅ Visual interface shows all schema fields
+- ✅ Instant validation feedback
+- ✅ See exact error messages
+- ✅ Auto-generated from your Pydantic models
 
-def test_device_info():
-    """Test DeviceInfo schema with valid data."""
-    print("\n=== Testing DeviceInfo ===")
+### Using cURL (Command Line Testing)
 
-    device = DeviceInfo(
-        device_id="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-        ip_address="192.168.1.100",
-        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        is_vpn=False,
-        is_tor=False,
-    )
-
-    print(f"✅ DeviceInfo created successfully")
-    print(f"   Device ID: {device.device_id}")
-    print(f"   IP: {device.ip_address}")
-    print(f"   VPN: {device.is_vpn}")
-
-
-def test_user_info():
-    """Test UserInfo schema with valid data."""
-    print("\n=== Testing UserInfo ===")
-
-    user = UserInfo(
-        user_id="user_12345",
-        email="test@example.com",
-        account_age_days=45,
-        is_verified=True,
-        previous_fraud_reports=0,
-    )
-
-    print(f"✅ UserInfo created successfully")
-    print(f"   User ID: {user.user_id}")
-    print(f"   Email: {user.email}")
-    print(f"   Account age: {user.account_age_days} days")
-
-
-def test_location_info():
-    """Test LocationInfo schema with valid data."""
-    print("\n=== Testing LocationInfo ===")
-
-    location = LocationInfo(
-        country_code="US",
-        city="San Francisco",
-        latitude=37.7749,
-        longitude=-122.4194,
-    )
-
-    print(f"✅ LocationInfo created successfully")
-    print(f"   Country: {location.country_code}")
-    print(f"   City: {location.city}")
-    print(f"   Coords: ({location.latitude}, {location.longitude})")
-
-
-def test_transaction_request():
-    """Test complete TransactionCheckRequest schema."""
-    print("\n=== Testing TransactionCheckRequest ===")
-
-    request = TransactionCheckRequest(
-        transaction_id="txn_1234567890",
-        amount=150.00,
-        currency="USD",
-        transaction_type=TransactionType.PAYMENT,
-        industry=Industry.RETAIL,
-        timestamp=datetime.now(),
-        merchant_id="merchant_abc123",
-        device=DeviceInfo(
-            device_id="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-            ip_address="192.168.1.100",
-            user_agent="Mozilla/5.0",
-        ),
-        user=UserInfo(
-            user_id="user_12345",
-            email="test@example.com",
-            account_age_days=45,
-        ),
-        location=LocationInfo(
-            country_code="US",
-            city="San Francisco",
-        ),
-    )
-
-    print(f"✅ TransactionCheckRequest created successfully")
-    print(f"   Transaction ID: {request.transaction_id}")
-    print(f"   Amount: ${request.amount}")
-    print(f"   Type: {request.transaction_type.value}")
-    print(f"   Industry: {request.industry.value}")
-
-
-def test_fraud_response():
-    """Test FraudCheckResponse schema."""
-    print("\n=== Testing FraudCheckResponse ===")
-
-    response = FraudCheckResponse(
-        transaction_id="txn_1234567890",
-        verdict=FraudVerdict.APPROVE,
-        risk_score=15.0,
-        risk_level=RiskLevel.LOW,
-        flags=[],
-        recommendation="Transaction appears safe.",
-    )
-
-    print(f"✅ FraudCheckResponse created successfully")
-    print(f"   Verdict: {response.verdict.value}")
-    print(f"   Risk Score: {response.risk_score}")
-    print(f"   Risk Level: {response.risk_level.value}")
-
-
-def test_json_serialization():
-    """Test JSON serialization/deserialization."""
-    print("\n=== Testing JSON Serialization ===")
-
-    device = DeviceInfo(
-        device_id="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-        ip_address="192.168.1.100",
-        user_agent="Mozilla/5.0",
-    )
-
-    # Serialize to JSON
-    json_str = device.model_dump_json(indent=2)
-    print(f"✅ Serialized to JSON:")
-    print(json_str)
-
-    # Deserialize from JSON
-    device_copy = DeviceInfo.model_validate_json(json_str)
-    print(f"✅ Deserialized from JSON")
-    print(f"   Device IDs match: {device.device_id == device_copy.device_id}")
-
-
-if __name__ == "__main__":
-    print("=" * 60)
-    print("TESTING VALID PYDANTIC SCHEMAS")
-    print("=" * 60)
-
-    test_device_info()
-    test_user_info()
-    test_location_info()
-    test_transaction_request()
-    test_fraud_response()
-    test_json_serialization()
-
-    print("\n" + "=" * 60)
-    print("✅ ALL TESTS PASSED!")
-    print("=" * 60)
-```
-
-### Test Script 2: Validation Errors
-
-**File: `/home/user/sentinel-api/test_schemas_invalid.py`**
-
-```python
-#!/usr/bin/env python3
-"""
-Test script for Pydantic validation errors.
-
-Tests that schemas properly reject invalid data.
-"""
-
-from pydantic import ValidationError
-from app.models.schemas import (
-    DeviceInfo,
-    UserInfo,
-    LocationInfo,
-    TransactionCheckRequest,
-)
-
-
-def test_invalid_device_id():
-    """Test that invalid device IDs are rejected."""
-    print("\n=== Testing Invalid Device ID ===")
-
-    try:
-        DeviceInfo(
-            device_id="invalid",  # Too short
-            ip_address="192.168.1.1",
-            user_agent="Mozilla/5.0",
-        )
-        print("❌ Should have raised ValidationError")
-    except ValidationError as e:
-        print(f"✅ Correctly rejected invalid device_id")
-        print(f"   Error: {e.errors()[0]['msg']}")
-
-
-def test_invalid_email():
-    """Test that invalid emails are rejected."""
-    print("\n=== Testing Invalid Email ===")
-
-    try:
-        UserInfo(
-            user_id="user_123",
-            email="not-an-email",  # No @ or domain
-            account_age_days=10,
-        )
-        print("❌ Should have raised ValidationError")
-    except ValidationError as e:
-        print(f"✅ Correctly rejected invalid email")
-        print(f"   Error: {e.errors()[0]['msg']}")
-
-
-def test_negative_amount():
-    """Test that negative amounts are rejected."""
-    print("\n=== Testing Negative Amount ===")
-
-    try:
-        from datetime import datetime
-        from app.models.schemas import TransactionType, Industry
-
-        TransactionCheckRequest(
-            transaction_id="txn_123",
-            amount=-100.0,  # ❌ Negative
-            currency="USD",
-            transaction_type=TransactionType.PAYMENT,
-            industry=Industry.RETAIL,
-            timestamp=datetime.now(),
-            merchant_id="merchant_123",
-            device=DeviceInfo(
-                device_id="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-                ip_address="192.168.1.1",
-                user_agent="Mozilla/5.0",
-            ),
-            user=UserInfo(
-                user_id="user_123",
-                email="test@example.com",
-                account_age_days=10,
-            ),
-            location=LocationInfo(country_code="US"),
-        )
-        print("❌ Should have raised ValidationError")
-    except ValidationError as e:
-        print(f"✅ Correctly rejected negative amount")
-        print(f"   Error: {e.errors()[0]['msg']}")
-
-
-def test_invalid_coordinates():
-    """Test that mismatched lat/lon are rejected."""
-    print("\n=== Testing Invalid Coordinates ===")
-
-    try:
-        LocationInfo(
-            country_code="US",
-            latitude=37.7749,
-            # Missing longitude - should fail
-        )
-        print("❌ Should have raised ValidationError")
-    except ValidationError as e:
-        print(f"✅ Correctly rejected mismatched coordinates")
-        print(f"   Error: {e.errors()[0]['msg']}")
-
-
-def test_future_timestamp():
-    """Test that future timestamps are rejected."""
-    print("\n=== Testing Future Timestamp ===")
-
-    try:
-        from datetime import datetime, timedelta
-        from app.models.schemas import TransactionType, Industry
-
-        future_time = datetime.now() + timedelta(days=1)
-
-        TransactionCheckRequest(
-            transaction_id="txn_123",
-            amount=100.0,
-            currency="USD",
-            transaction_type=TransactionType.PAYMENT,
-            industry=Industry.RETAIL,
-            timestamp=future_time,  # ❌ Future
-            merchant_id="merchant_123",
-            device=DeviceInfo(
-                device_id="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-                ip_address="192.168.1.1",
-                user_agent="Mozilla/5.0",
-            ),
-            user=UserInfo(
-                user_id="user_123",
-                email="test@example.com",
-                account_age_days=10,
-            ),
-            location=LocationInfo(country_code="US"),
-        )
-        print("❌ Should have raised ValidationError")
-    except ValidationError as e:
-        print(f"✅ Correctly rejected future timestamp")
-        print(f"   Error: {e.errors()[0]['msg']}")
-
-
-if __name__ == "__main__":
-    print("=" * 60)
-    print("TESTING VALIDATION ERRORS")
-    print("=" * 60)
-
-    test_invalid_device_id()
-    test_invalid_email()
-    test_negative_amount()
-    test_invalid_coordinates()
-    test_future_timestamp()
-
-    print("\n" + "=" * 60)
-    print("✅ ALL VALIDATION TESTS PASSED!")
-    print("=" * 60)
-```
-
-### Running the Tests
+Test validation with valid data:
 
 ```bash
-# Make scripts executable
-chmod +x /home/user/sentinel-api/test_schemas_valid.py
-chmod +x /home/user/sentinel-api/test_schemas_invalid.py
+# Test with valid transaction request
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_id": "txn_12345",
+    "amount": 150.00,
+    "currency": "USD",
+    "transaction_type": "payment",
+    "industry": "retail",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "merchant_id": "merchant_001",
+    "device": {
+      "device_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0"
+    },
+    "user": {
+      "user_id": "user_123",
+      "email": "test@example.com",
+      "account_age_days": 45
+    },
+    "location": {
+      "country_code": "US",
+      "city": "San Francisco"
+    }
+  }'
+```
 
-# Run tests
-cd /home/user/sentinel-api
-python test_schemas_valid.py
-python test_schemas_invalid.py
+Test validation with invalid data (triggers errors):
+
+```bash
+# Test with invalid email (should return validation error)
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_id": "txn_12345",
+    "amount": 150.00,
+    "currency": "USD",
+    "transaction_type": "payment",
+    "industry": "retail",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "merchant_id": "merchant_001",
+    "device": {
+      "device_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0"
+    },
+    "user": {
+      "user_id": "user_123",
+      "email": "invalid-email",
+      "account_age_days": 45
+    },
+    "location": {
+      "country_code": "US"
+    }
+  }'
+```
+
+Expected validation error response:
+```json
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "user", "email"],
+      "msg": "value is not a valid email address",
+      "input": "invalid-email"
+    }
+  ]
+}
+```
+
+### Validation Scenarios to Test
+
+**1. Test negative amounts:**
+```bash
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{"amount": -100, ...}'  # Should fail: amount must be > 0
+```
+
+**2. Test invalid device ID:**
+```bash
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{"device": {"device_id": "short", ...}}'  # Should fail: too short
+```
+
+**3. Test missing required fields:**
+```bash
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{}'  # Should fail: missing required fields
+```
+
+**4. Test mismatched coordinates:**
+```bash
+curl -X POST http://localhost:8000/api/v1/check-fraud \
+  -H "Content-Type: application/json" \
+  -d '{"location": {"latitude": 37.77}}'  # Should fail: longitude required if latitude present
 ```
 
 ---

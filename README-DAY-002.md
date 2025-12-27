@@ -1500,21 +1500,15 @@ def database_stats(db: Session = Depends(get_db)):
 ### 7. Updated `requirements.txt`
 
 ```txt
-# Web Framework
+# Web Framework (Day 1)
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-
-# Database (Day 2)
-sqlalchemy==2.0.23
-psycopg2-binary==2.9.9  # PostgreSQL driver
-alembic==1.13.0          # Database migrations (future use)
-
-# Environment Variables
 python-dotenv==1.0.0
 
-# Development Tools
-pytest==7.4.3
-httpx==0.25.2            # For testing FastAPI endpoints
+# Database (Day 2 additions)
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9  # PostgreSQL driver
+alembic==1.13.0          # Database migrations
 ```
 
 ---
